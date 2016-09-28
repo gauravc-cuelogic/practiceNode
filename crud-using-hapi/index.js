@@ -11,7 +11,7 @@ server.connection({host: configs.server.host, port: configs.server.port });
 
 server.route({
     method: 'GET',
-    path: '/getAllData',
+    path: '/task',
     handler: function (request, reply) {
       var data = DB.findData("select * from users where is_deleted = ?",["0"], function(data){
           reply(data);
@@ -21,7 +21,7 @@ server.route({
 
 server.route({
     method: 'GET',
-    path: '/fetchById/{id}',
+    path: '/task/{id}',
     handler: function (request, reply) {
       console.log(request.params.id);
       var data = DB.findData("select * from users where is_deleted = 0 and id = ?",[request.params.id], function(data){
@@ -32,7 +32,7 @@ server.route({
 
 server.route({
     method: 'DELETE',
-    path: '/delete/{id}',
+    path: '/task/{id}',
     handler: function (request, reply) {
       var data = DB.findData("Delete from users where id = ?",[request.params.id], function(data){
           reply(data);
@@ -42,7 +42,7 @@ server.route({
 
 server.route({
     method: 'POST',
-    path: '/insert',
+    path: '/task',
     handler: function (request, reply) {
       console.log(request.payload)
       var data = DB.findData("INSERT INTO `my_test_db`.`users` (`name`, `email`, `phone`, `address`) VALUES ( ?, ?, ?, ?);",
@@ -65,11 +65,11 @@ server.route({
 
 server.route({
     method: 'PUT',
-    path: '/update',
+    path: '/task/{id}',
     handler: function (request, reply) {
-      console.log(request.payload)
+      console.log(request.params)
       var data = DB.findData("UPDATE `users` SET `name` = ?, `email` = ?, `phone` = ?, `address` = ? WHERE `id` = ?;",
-                            [request.payload.name,request.payload.email,request.payload.phone,request.payload.address,request.payload.id],
+                            [request.payload.name,request.payload.email,request.payload.phone,request.payload.address,request.params.id],
                  function(data){
                       reply(data);
                   });
@@ -77,7 +77,6 @@ server.route({
     config: {
         validate: {
           payload: {
-              id: Joi.number().required(),
               name: Joi.string().required(),
               email: Joi.string().email(),
               phone: Joi.number(),
