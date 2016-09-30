@@ -3,7 +3,6 @@
 const configs      = require('./config.js');
 const mysql      = require('mysql');
 var connection = '';
-var isUserLoggedIn = false;
 
 var connectDb = function (authKey, cb){
   connection = mysql.createConnection({
@@ -21,10 +20,8 @@ var connectDb = function (authKey, cb){
         }, function(err, rows, fields) {
             if (err) throw err;
             if(rows.length > 0){
-              isUserLoggedIn = true;
               cb && cb(true);
             } else {
-              isUserLoggedIn = false;
               connection.end();
               cb && cb(false);
             }
@@ -54,7 +51,6 @@ var createFriends = function (userId, friends){
   connection.query({sql: "DELETE FROM `friends` WHERE `user_id` = ?", timeout: 40000, values: [userId] });
 
   friendList.forEach(function (key, value){
-    console.log(key + '===' + value);
     connection.query({sql: "INSERT INTO `friends`(`user_id`, `friend_id`) \
                     VALUES (?, (select id from users where name = ? limit 1) )",
                     timeout: 40000,

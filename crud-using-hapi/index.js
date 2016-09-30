@@ -114,7 +114,6 @@ server.route({
               });
         }
       });
-
     },
     config: {
         validate: {
@@ -153,7 +152,6 @@ server.route({
                   });
         }
       });
-
     },
     config: {
         validate: {
@@ -196,6 +194,27 @@ server.route({
     }
 });
 
+server.route({
+    method: 'DELETE',
+    path: '/friend/{id}/{friendId}',
+    handler: function (request, reply) {
+      if(!request.headers.authorization){
+        reply('User Not Logged In.Auth')
+      }
+      DB.connectDb(request.headers.authorization, function (success){
+        if(!success){
+          reply('Un Authorised Access!');
+        }else{
+          var data = DB.findData("Delete from friends where user_id = ? and friend_id = ?",
+                      [request.params.id,request.params.friendId],
+                      function(data){
+                        DB.endConnection();
+                        reply(data);
+                      });
+        }
+      });
+    }
+});
 
 server.start(function(err){
 
